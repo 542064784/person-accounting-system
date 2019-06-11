@@ -16,7 +16,9 @@ public enum TransactionType {
     休闲娱乐,
     医疗保健,
     借还款,
-    其它消费;
+    其他消费,
+    工资,
+    其他收入
 
 
 }

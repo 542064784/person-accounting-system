@@ -1,17 +1,16 @@
 package com.damon.service;
 
-import com.damon.dto.PersonalAccountDto;
-import com.damon.entity.PersonalAccountEntity;
-import com.damon.repository.PersonalAccountRepository;
+import com.damon.dto.DailyAccountInformationDto;
+import com.damon.entity.DailyAccountInformationEntity;
+import com.damon.repository.DailyAccountInformationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-
 /**
  * person account service
  *
@@ -23,36 +22,38 @@ import java.util.Objects;
 public class PersonalAccountService {
 
     @Autowired
-    private PersonalAccountRepository personalAccountRepository;
+    private DailyAccountInformationRepository dailyAccountInformationRepository;
 
-    public void addPersonalAccount(final PersonalAccountDto personalAccountDto) {
-        PersonalAccountEntity personalAccountEntity = new PersonalAccountEntity();
-        BeanUtils.copyProperties(personalAccountDto, personalAccountEntity);
-        setDateFiled(personalAccountEntity);
-        setAmountFiled(personalAccountEntity);
-        personalAccountRepository.saveAndFlush(personalAccountEntity);
+    public void addPersonalAccount(final DailyAccountInformationDto dailyAccountInformationDto) {
+        DailyAccountInformationEntity dailyAccountInformationEntity = new DailyAccountInformationEntity();
+        BeanUtils.copyProperties(dailyAccountInformationDto, dailyAccountInformationEntity);
+        setDateFiled(dailyAccountInformationEntity);
+        dailyAccountInformationRepository.saveAndFlush(dailyAccountInformationEntity);
     }
 
-    private void setAmountFiled(final PersonalAccountEntity personalAccountEntity){
-        String amount = personalAccountEntity.getAmount();
-        if (amount.startsWith("-")){
-            personalAccountEntity.setExpense(new BigDecimal(amount));
-        }else {
-            personalAccountEntity.setIncome(new BigDecimal(amount));
-        }
-    }
-
-    private void setDateFiled(final PersonalAccountEntity personalAccountEntity) {
+    private void setDateFiled(final DailyAccountInformationEntity dailyAccountInformationEntity) {
         LocalDate localDate = LocalDate.now();
-        if (Objects.isNull(personalAccountEntity.getYear())) {
-            personalAccountEntity.setYear(localDate.getYear());
+        if (Objects.isNull(dailyAccountInformationEntity.getYear())) {
+            dailyAccountInformationEntity.setYear(localDate.getYear());
         }
-        if (Objects.isNull(personalAccountEntity.getMonth())) {
-            personalAccountEntity.setMonth(localDate.getMonthValue());
+        if (Objects.isNull(dailyAccountInformationEntity.getMonth())) {
+            dailyAccountInformationEntity.setMonth(localDate.getMonthValue());
         }
-        if (Objects.isNull(personalAccountEntity.getDayOfMonth())) {
-            personalAccountEntity.setDayOfMonth(localDate.getDayOfMonth());
+        if (Objects.isNull(dailyAccountInformationEntity.getDayOfMonth())) {
+            dailyAccountInformationEntity.setDayOfMonth(localDate.getDayOfMonth());
         }
+    }
+
+
+    public List<DailyAccountInformationDto> findDailyAccountInformation(final Integer year,final Integer month,final Integer dayOfMonth){
+        List<DailyAccountInformationDto> dailyAccountInformationDtos = new ArrayList<>();
+        List<DailyAccountInformationEntity> dailyAccountInformationEntityList = dailyAccountInformationRepository.findByYearAndMonthAndDayOfMonthAndDeleteFlagIsFalse(year, month, dayOfMonth);
+        dailyAccountInformationEntityList.forEach(dailyAccountInformationEntity -> {
+            DailyAccountInformationDto dailyAccountInformationDto = new DailyAccountInformationDto();
+            BeanUtils.copyProperties(dailyAccountInformationEntity, dailyAccountInformationDto);
+            dailyAccountInformationDtos.add(dailyAccountInformationDto);
+        });
+        return dailyAccountInformationDtos;
     }
 
 
