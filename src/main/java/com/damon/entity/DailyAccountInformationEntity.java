@@ -1,15 +1,10 @@
 package com.damon.entity;
 
 import com.damon.dto.TransactionType;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+
+import javax.persistence.*;
 import java.util.Date;
 /**
  *  日账单 entity
@@ -22,8 +17,10 @@ import java.util.Date;
 public class DailyAccountInformationEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long dailyId;
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    @Column(name = "daily_id")
+    private String dailyId;
     @Column(name = "username")
     private String username;
     @Column(name = "year")
@@ -44,15 +41,15 @@ public class DailyAccountInformationEntity {
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
     //  删除标记
-    @Column(name = "delete_flag")
+    @Column(name = "deleted")
     @Type(type = "yes_no")
-    private Boolean deleteFlag = Boolean.FALSE;
+    private Boolean deleted = Boolean.FALSE;
 
-    public Long getDailyId() {
+    public String getDailyId() {
         return dailyId;
     }
 
-    public void setDailyId(Long dailyId) {
+    public void setDailyId(String dailyId) {
         this.dailyId = dailyId;
     }
 
@@ -128,11 +125,11 @@ public class DailyAccountInformationEntity {
         this.transactionType = transactionType;
     }
 
-    public Boolean getDeleteFlag() {
-        return deleteFlag;
+    public Boolean getDeleted() {
+        return deleted;
     }
 
-    public void setDeleteFlag(Boolean deleteFlag) {
-        this.deleteFlag = deleteFlag;
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

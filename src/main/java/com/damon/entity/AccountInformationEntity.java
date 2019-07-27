@@ -1,34 +1,25 @@
 package com.damon.entity;
 
-
 import com.damon.dto.TransactionType;
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.math.BigDecimal;
-
+import javax.persistence.*;
 /**
- *  person account entity
+ *  account information entity
  *
  * @author Damon Chen
- * @date 2019/6/9
+ * @date 2019/07/27
  */
 @Entity
-@Table(name = "personal_account")
+@Table(name = "account_information")
 @Data
-public class PersonalAccountEntity {
+public class AccountInformationEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    private String id;
     //  年
     @Column(name = "year")
     private Integer year;
@@ -44,12 +35,6 @@ public class PersonalAccountEntity {
     //  用户名
     @Column(name = "username")
     private String username;
-    //  支出
-    @Column(name = "expense")
-    private BigDecimal expense;
-    //  收入
-    @Column(name = "income")
-    private BigDecimal income;
     //  金额详情
     @Column(name = "comment")
     private String comment;

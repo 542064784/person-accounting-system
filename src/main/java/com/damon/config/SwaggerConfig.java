@@ -26,13 +26,14 @@ public class SwaggerConfig {
                 .apiInfo(buildApiInf())
                 .host("localhost:9001")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.damon.controller"))//controller路径
+                //controller路径
+                .apis(RequestHandlerSelectors.basePackage("com.damon.controller"))
                 .paths(PathSelectors.any()).build();
     }
 
     private ApiInfo buildApiInf() {
         return new ApiInfoBuilder()
-                .title("RestAPI Docs")
+                .title("Person Account System Api Docs")
                 .termsOfServiceUrl("https://github.com/542064784/person-accounting-system")
                 .build();
 
