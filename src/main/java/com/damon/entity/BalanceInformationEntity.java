@@ -6,19 +6,19 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import java.math.BigDecimal;
 import java.util.Date;
 /**
- *  account information entity
+ *  balance information entity
  *
  * @author Damon Chen
- * @date 2019/07/27
+ * @date 2019/08/03
  */
 @Entity
-@Table(name = "account_information")
-@Data
+@Table(name = "balance_information")
 @EntityListeners({AuditingEntityListener.class})
-public class AccountInformationEntity {
+@Data
+public class BalanceInformationEntity {
 
     @Id
     @GeneratedValue(generator="system-uuid")
@@ -34,9 +34,11 @@ public class AccountInformationEntity {
     @Column(name = "day_of_month")
     private Integer dayOfMonth;
 
-    @NotBlank
     @Column(name = "amount")
     private String amount;
+
+    @Column(name = "balance")
+    private BigDecimal balance;
 
     @Column(name = "username")
     private String username;
@@ -44,7 +46,6 @@ public class AccountInformationEntity {
     @Column(name = "description")
     private String description;
 
-    @NotBlank
     @Column(name = "transaction_type")
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
