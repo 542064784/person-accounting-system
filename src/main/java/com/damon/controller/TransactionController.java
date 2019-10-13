@@ -29,11 +29,21 @@ public class TransactionController {
      *  add account information record
      *
      * @param transactionInformationDto  transactionInformationDto
-     * @return    success  or  error message
      */
     @PostMapping("/save-transaction")
     public void addAccountInformation(@RequestBody final TransactionInformationDto transactionInformationDto){
-        transactionService.processAccountInformation(transactionInformationDto);
+        transactionService.processTransaction(transactionInformationDto);
+    }
+
+    /**
+     *  delete transaction
+     *
+     * @param id     id
+     * @throws Throwable   throwable
+     */
+    @GetMapping("/delete-transaction")
+    public void deleteTransaction(String id) throws Throwable {
+        transactionService.deleteTransaction(id);
     }
 
 }

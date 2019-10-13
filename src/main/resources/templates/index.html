@@ -54,6 +54,22 @@
                 loadData($http, $scope);
             };
 
+            $scope.delete = function (id) {
+                $http({
+                    method: 'GET',
+                    params:{
+                        'id':id
+                    },
+                    url:'/transaction/delete-transaction'
+                }).then(function successCallback() {
+                    year = $scope.year;
+                    month = $scope.month;
+                    loadData($http, $scope);
+                }, function errorCallback(response) {
+                    alert(response);
+                }) ;
+            };
+
             $scope.add = function () {
                 $http({
                     method: 'POST',
@@ -94,6 +110,7 @@
             <th>消费类型</th>
             <th>详情</th>
             <th>创建时间</th>
+            <th>操作</th>
         </tr>
         <tr ng-repeat="accountInformation in transactionInformationDtoList">
             <td>{{accountInformation.year}}/{{accountInformation.month}}/{{accountInformation.dayOfMonth}}</td>
@@ -101,6 +118,7 @@
             <td>{{accountInformation.transactionType}}</td>
             <td>{{accountInformation.description}}</td>
             <td>{{accountInformation.createDate}}</td>
+            <td><input type="button" ng-click="delete(accountInformation.id)" value="删除"></td>
         </tr>
     </table>
     {{year}}年{{month}}月总计：

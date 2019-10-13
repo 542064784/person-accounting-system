@@ -11,6 +11,8 @@ import java.util.Date;
 @Data
 public class TransactionInformationDto {
 
+    private String id;
+
     private Integer year;
 
     private Integer month;

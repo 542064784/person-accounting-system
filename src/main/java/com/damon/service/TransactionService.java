@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * person account service
@@ -81,12 +82,33 @@ public class TransactionService {
         return transactionDto;
     }
 
+    public void deleteTransaction(final String id) throws Throwable {
+        TransactionInformation transactionInformation = transactionInformationRepository.findById(id).orElseThrow(
+                (Supplier<Throwable>) () -> new RuntimeException("not found record,id is " + id));
+
+        BigDecimal money = new BigDecimal(transactionInformation.getMoney());
+        MonthTotal monthTotal = findByExample(transactionInformation);
+        if (null == monthTotal.getMoney()){
+            return;
+        }
+        monthTotal.setMoney(monthTotal.getMoney().subtract(money));
+        List<BalanceLog> balanceLogs = balanceLogRepository.findByUsernameAndYearGreaterThanEqualAndAndMonthGreaterThanEqual(
+                transactionInformation.getUsername(), transactionInformation.getYear(), transactionInformation.getMonth());
+        if (!CollectionUtils.isEmpty(balanceLogs)){
+            balanceLogs.forEach(balanceLog -> balanceLog.setBalance(balanceLog.getBalance().subtract(money)));
+            balanceLogRepository.saveAll(balanceLogs);
+        }
+        monthTotalRepository.saveAndFlush(monthTotal);
+        transactionInformationRepository.delete(transactionInformation);
+
+    }
+
     /**
      *  process account information
      *
      * @param transactionInformationDto transactionInformationDto
      */
-    public void processAccountInformation(final TransactionInformationDto transactionInformationDto){
+    public void processTransaction(final TransactionInformationDto transactionInformationDto){
         final TransactionInformation accountInformation = saveAccountInformation(transactionInformationDto);
         log.info("save account information success");
         saveMonthAccountInformation(accountInformation);

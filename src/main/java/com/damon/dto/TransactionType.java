@@ -17,6 +17,7 @@ public enum TransactionType {
     通讯物流,
     休闲娱乐,
     医疗保健,
+    投资理财,
     交通出行,
     住房物业,
     文体教育,
