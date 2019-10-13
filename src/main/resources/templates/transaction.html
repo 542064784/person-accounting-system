@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        table, th , td {
+            border: 1px solid grey;
+            border-collapse: collapse;
+            padding: 5px;
+        }
+        table tr:nth-child(odd) {
+            background-color: #f1f1f1;
+        }
+        table tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+    </style>
+    <script src="/static/jquery-3.4.1.js"></script>
+    <script src="/static/angular-1.7.8/angular-animate.js"></script>
+</head>
+<body>
+    <form method="post" action="/account/save-account-information">
+        年:<input type="text" name="year"/>
+        月:<input type="text" name="month"/>
+        日:<input type="text" name="dayOfMonth"/>
+        金额:<input type="text" name="amount"/>
+        消费类型:<select name="transactionType">
+                    <#list transactionTypes as transactionType>
+                        <option value="${transactionType}">${transactionType}</option>
+                    </#list>
+                  </select>
+        详情:<input type="text" name="description"/>
+        <input type="submit" value="添加"/>
+    </form>
+    <table id="information">
+        <tr>
+            <th>时间</th>
+            <th>金额</th>
+            <th>消费类型</th>
+            <th>详情</th>
+        </tr>
+        <#if transactionInformationDtoList ??>
+            <#list transactionInformationDtoList as accountInformation>
+                <tr>
+                    <td>${accountInformation['createDate']}</td>
+                    <td>${accountInformation['amount']}</td>
+                    <td>${accountInformation['transactionType']}</td>
+                    <td>${accountInformation['description']}</td>
+                </tr>
+            </#list>
+    </#if>
+
+    </table>
+    <#if monthTotalDtoList??>
+        <#list monthTotalDtoList as monthTotal>
+            月总计：
+            <p>
+                ${monthTotal['transactionType']} : ${monthTotal['money']}
+            </p>
+        </#list>
+    </#if>
+    <#if balance??>
+        余额：
+        <p>
+            balance : ${balance}
+        </p>
+    </#if>
+</body>
+</html>

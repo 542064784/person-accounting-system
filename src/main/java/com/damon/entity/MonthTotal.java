@@ -4,53 +4,43 @@ import com.damon.dto.TransactionType;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import java.math.BigDecimal;
 import java.util.Date;
 /**
- *  account information entity
+ *  Month Account Information Entity
  *
  * @author Damon Chen
- * @date 2019/07/27
+ * @date 2019/6/11
  */
 @Entity
-@Table(name = "account_information")
-@Data
+@Table(name = "month_total")
 @EntityListeners({AuditingEntityListener.class})
-public class AccountInformationEntity {
+@Data
+public class MonthTotal {
 
     @Id
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy = "uuid")
     private String id;
-
-    @Column(name = "year")
-    private Integer year;
-
-    @Column(name = "month")
-    private Integer month;
-
-    @Column(name = "day_of_month")
-    private Integer dayOfMonth;
-
-    @NotBlank
-    @Column(name = "amount")
-    private String amount;
-
     @Column(name = "username")
     private String username;
-
-    @Column(name = "description")
-    private String description;
-
-    @NotBlank
+    @Column(name = "year")
+    private Integer year;
+    @Column(name = "month")
+    private Integer month;
+    @Column(name = "money")
+    private BigDecimal money;
     @Column(name = "transaction_type")
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
-
     @CreatedDate
     @Column(name = "create_date")
     private Date createDate;
-
+    @LastModifiedDate
+    @Column(name = "modified_date")
+    private Date modifiedDate;
 }

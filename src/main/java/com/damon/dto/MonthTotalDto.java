@@ -11,13 +11,9 @@ import java.math.BigDecimal;
  * @date 2019/6/11
  */
 @Data
-public class MonthAccountInformationDto {
+public class MonthTotalDto {
 
     private String username;
-
-    private Integer year;
-
-    private Integer month;
 
     private BigDecimal money;
 

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        table, th , td {
+            border: 1px solid grey;
+            border-collapse: collapse;
+            padding: 5px;
+        }
+        table tr:nth-child(odd) {
+            background-color: #f1f1f1;
+        }
+        table tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+    </style>
+    <script src="/static/jquery-3.4.1.js"></script>
+    <script src="/static/angular.js"></script>
+    <script>
+        var app = angular.module('accountApp',[]);
+
+        var year = new Date().getFullYear();
+        var month = new Date().getMonth();
+        function loadData($http, $scope) {
+            $http({
+                method: 'GET',
+                params: {
+                    'username': '542064784',
+                    'year': year,
+                    'month': month
+                },
+                url: '/transaction/find-information'
+            }).then(function onSuccess(response) {
+                $scope.transactionInformationDtoList = response.data.transactionInformationDtoList;
+                $scope.monthTotalDtoList = response.data.monthTotalDtoList;
+                $scope.balance = response.data.balance;
+                $scope.year = response.data.year;
+                $scope.month = response.data.month;
+                $scope.monthIncome = response.data.monthIncome;
+                $scope.monthConsumption = response.data.monthConsumption;
+                $scope.transactionTypes = response.data.transactionTypes;
+            })
+        }
+
+        app.controller('accountController',function ($scope,$http) {
+            $scope.init = function () {
+                loadData($http, $scope);
+            };
+
+            $scope.search = function () {
+                year = $scope.year;
+                month = $scope.month;
+                loadData($http, $scope);
+            };
+
+            $scope.add = function () {
+                $http({
+                    method: 'POST',
+                    data:{
+                        'year':$scope.year,
+                        'month':$scope.month,
+                        'dayOfMonth':$scope.dayOfMonth,
+                        'money':$scope.money,
+                        'transactionType':$scope.transactionType,
+                        'description':$scope.description
+                    },
+                    url:'/transaction/save-transaction'
+                }).then(function successCallback() {
+                    year = $scope.year;
+                    month = $scope.month;
+                    loadData($http, $scope);
+                }, function errorCallback(response) {
+                    alert(response);
+                }) ;
+            }
+        })
+    </script>
+</head>
+<body ng-app="accountApp" ng-controller="accountController" ng-init="init()">
+    年:<input type="text" ng-model="year"/>
+    月:<input type="text" ng-model="month"/>
+    日:<input type="text" ng-model="dayOfMonth"/>
+    金额:<input type="text" ng-model="money"/>
+    消费类型:<select ng-init="transactionType = transactionTypes[0]" ng-model="transactionType" ng-options="x for x in transactionTypes">
+            </select>
+    详情:<input type="text" ng-model="description"/>
+    <input type="button" ng-click="add()" value="添加"/>
+    <input type="button" ng-click="search()" value="查询">
+    <table id="information">
+        <tr>
+            <th>日期</th>
+            <th>金额</th>
+            <th>消费类型</th>
+            <th>详情</th>
+            <th>创建时间</th>
+        </tr>
+        <tr ng-repeat="accountInformation in transactionInformationDtoList">
+            <td>{{accountInformation.year}}/{{accountInformation.month}}/{{accountInformation.dayOfMonth}}</td>
+            <td>{{accountInformation.money}}</td>
+            <td>{{accountInformation.transactionType}}</td>
+            <td>{{accountInformation.description}}</td>
+            <td>{{accountInformation.createDate}}</td>
+        </tr>
+    </table>
+    {{year}}年{{month}}月总计：
+    <p ng-repeat="monthTotal in monthTotalDtoList">
+        {{monthTotal.transactionType}} : {{monthTotal.money}}
+    </p>
+    共收入{{monthIncome}}元，共支出{{monthConsumption}}元
+    <p>
+        余额 : {{balance}}
+    </p>
+</body>
+</html>

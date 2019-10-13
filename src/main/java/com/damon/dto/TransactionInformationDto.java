@@ -9,9 +9,7 @@ import java.util.Date;
  * @date 2019/07/27
  */
 @Data
-public class AccountInformationDto {
-
-    private String id;
+public class TransactionInformationDto {
 
     private Integer year;
 
@@ -19,7 +17,7 @@ public class AccountInformationDto {
 
     private Integer dayOfMonth;
 
-    private String amount;
+    private String money;
 
     private String username;
 

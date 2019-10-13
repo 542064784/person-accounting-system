@@ -18,6 +18,8 @@ public enum TransactionType {
     休闲娱乐,
     医疗保健,
     交通出行,
+    住房物业,
+    文体教育,
     人情往来,
     其他消费,
     工资,
