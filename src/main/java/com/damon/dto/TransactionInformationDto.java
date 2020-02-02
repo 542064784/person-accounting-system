@@ -1,7 +1,6 @@
 package com.damon.dto;
 
 import lombok.Data;
-import java.util.Date;
 /**
  *  account information dto
  *
@@ -27,6 +26,6 @@ public class TransactionInformationDto {
 
     private TransactionType transactionType;
 
-    private Date createDate;
+    private String createDate;
 
 }

@@ -1,22 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="utf-8">
-    <style>
-        table, th , td {
-            border: 1px solid grey;
-            border-collapse: collapse;
-            padding: 5px;
-        }
-        table tr:nth-child(odd) {
-            background-color: #f1f1f1;
-        }
-        table tr:nth-child(even) {
-            background-color: #ffffff;
-        }
-    </style>
+
+    <link href="../static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <script src="/static/jquery-3.4.1.js"></script>
     <script src="/static/angular.js"></script>
+    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <script>
         var app = angular.module('accountApp',[]);
 
@@ -94,40 +87,44 @@
     </script>
 </head>
 <body ng-app="accountApp" ng-controller="accountController" ng-init="init()">
-    年:<input type="text" ng-model="year"/>
-    月:<input type="text" ng-model="month"/>
-    日:<input type="text" ng-model="dayOfMonth"/>
-    金额:<input type="text" ng-model="money"/>
-    消费类型:<select ng-init="transactionType = transactionTypes[0]" ng-model="transactionType" ng-options="x for x in transactionTypes">
-            </select>
-    详情:<input type="text" ng-model="description"/>
-    <input type="button" ng-click="add()" value="添加"/>
-    <input type="button" ng-click="search()" value="查询">
-    <table id="information">
-        <tr>
-            <th>日期</th>
-            <th>金额</th>
-            <th>消费类型</th>
-            <th>详情</th>
-            <th>创建时间</th>
-            <th>操作</th>
-        </tr>
-        <tr ng-repeat="accountInformation in transactionInformationDtoList">
-            <td>{{accountInformation.year}}/{{accountInformation.month}}/{{accountInformation.dayOfMonth}}</td>
-            <td>{{accountInformation.money}}</td>
-            <td>{{accountInformation.transactionType}}</td>
-            <td>{{accountInformation.description}}</td>
-            <td>{{accountInformation.createDate}}</td>
-            <td><input type="button" ng-click="delete(accountInformation.id)" value="删除"></td>
-        </tr>
-    </table>
-    {{year}}年{{month}}月总计：
-    <p ng-repeat="monthTotal in monthTotalDtoList">
-        {{monthTotal.transactionType}} : {{monthTotal.money}}
-    </p>
-    共收入{{monthIncome}}元，共支出{{monthConsumption}}元
-    <p>
-        余额 : {{balance}}
-    </p>
+    <div class="container-fluid">
+        年:<input type="text" ng-model="year" style="width: 50px"/>
+        月:<input type="text" ng-model="month" style="width: 50px"/>
+        日:<input type="text" ng-model="dayOfMonth" style="width: 50px"/>
+        金额:<input type="text" ng-model="money" style="width: 100px"/>
+        消费类型:<select ng-init="transactionType = transactionTypes[0]"
+                     ng-model="transactionType" ng-options="x for x in transactionTypes" style="width: 100px">
+                </select>
+        详情:<input type="text" ng-model="description" style="width: 500px"/>
+        <button type="submit" ng-click="add()">添加</button>
+        <button type="submit" ng-click="search()">查询</button>
+
+        <table id="information" class="table table-bordered">
+            <tr>
+                <th>日期</th>
+                <th>金额</th>
+                <th>消费类型</th>
+                <th>详情</th>
+                <th>创建时间</th>
+                <th>操作</th>
+            </tr>
+            <tr ng-repeat="accountInformation in transactionInformationDtoList">
+                <td>{{accountInformation.year}}/{{accountInformation.month}}/{{accountInformation.dayOfMonth}}</td>
+                <td>{{accountInformation.money}}</td>
+                <td>{{accountInformation.transactionType}}</td>
+                <td>{{accountInformation.description}}</td>
+                <td>{{accountInformation.createDate}}</td>
+                <td><button type="submit" ng-click="delete(accountInformation.id)">删除</button></td>
+            </tr>
+        </table>
+        {{year}}年{{month}}月总计：
+        <p ng-repeat="monthTotal in monthTotalDtoList">
+            {{monthTotal.transactionType}} : {{monthTotal.money}}
+        </p>
+        共收入{{monthIncome}}元，共支出{{monthConsumption}}元
+        <p>
+            余额 : {{balance}}
+        </p>
+    </div>
 </body>
 </html>

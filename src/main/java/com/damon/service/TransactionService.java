@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * person account service
@@ -41,26 +40,35 @@ public class TransactionService {
     @Autowired
     private BalanceLogRepository balanceLogRepository;
 
+    /**
+     *  find transaction information
+     *
+     * @param year       year
+     * @param month      month
+     * @param username  username
+     * @return            transactionDto
+     */
     public TransactionDto findTransactionInformation(final Integer year, final Integer month, String username){
         final TransactionDto transactionDto = new TransactionDto(year,month,username);
-        List<TransactionInformation> transactionInformationList = transactionInformationRepository.findTransactionInformation(
-                year, month, username);
-        List<TransactionInformationDto> transactionInformationDtoList = new ArrayList<>();
+        final List<TransactionInformation> transactionInformationList = transactionInformationRepository.
+                findTransactionInformation(year, month, username);
+        final List<TransactionInformationDto> transactionInformationDtoList = new ArrayList<>();
         transactionInformationList.forEach(transactionInformation -> {
             if (null != transactionInformation){
                 TransactionInformationDto transactionInformationDto = new TransactionInformationDto();
                 BeanUtils.copyProperties(transactionInformation, transactionInformationDto);
+                transactionInformationDto.setCreateDate(transactionInformation.getCreateDate().toString());
                 transactionInformationDtoList.add(transactionInformationDto);
             }
         });
         transactionDto.setTransactionInformationDtoList(transactionInformationDtoList);
 
-        List<MonthTotal> monthTotalList = monthTotalRepository.findByUsernameAndYearAndMonth(username, year, month);
+        final List<MonthTotal> monthTotalList = monthTotalRepository.findByUsernameAndYearAndMonth(username, year, month);
 
-        List<MonthTotalDto> monthTotalDtoList = new ArrayList<>();
+        final List<MonthTotalDto> monthTotalDtoList = new ArrayList<>();
         monthTotalList.forEach(monthTotal -> {
             if (null != monthTotal){
-                MonthTotalDto monthTotalDto = new MonthTotalDto();
+                final MonthTotalDto monthTotalDto = new MonthTotalDto();
                 BeanUtils.copyProperties(monthTotal, monthTotalDto);
                 if (monthTotal.getMoney().compareTo(BigDecimal.ZERO) < 0){
                     transactionDto.setMonthConsumption(transactionDto.getMonthConsumption().add(monthTotal.getMoney()));
@@ -73,7 +81,7 @@ public class TransactionService {
 
         transactionDto.setMonthTotalDtoList(monthTotalDtoList);
 
-        BalanceLog balanceInformation = balanceLogRepository.findByUsernameAndYearAndMonth(username,year,month);
+        final BalanceLog balanceInformation = balanceLogRepository.findByUsernameAndYearAndMonth(username,year,month);
         if (null == balanceInformation){
             transactionDto.setBalance(BigDecimal.ZERO);
         }else {
@@ -82,17 +90,22 @@ public class TransactionService {
         return transactionDto;
     }
 
-    public void deleteTransaction(final String id) throws Throwable {
-        TransactionInformation transactionInformation = transactionInformationRepository.findById(id).orElseThrow(
-                (Supplier<Throwable>) () -> new RuntimeException("not found record,id is " + id));
+    /**
+     *  delete transaction
+     *
+     * @param id              transactionInformation id
+     */
+    public void deleteTransaction(final String id){
+        final TransactionInformation transactionInformation = transactionInformationRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("not found record,id is " + id));
 
-        BigDecimal money = new BigDecimal(transactionInformation.getMoney());
-        MonthTotal monthTotal = findByExample(transactionInformation);
+        final BigDecimal money = new BigDecimal(transactionInformation.getMoney());
+        final MonthTotal monthTotal = findByExample(transactionInformation);
         if (null == monthTotal.getMoney()){
             return;
         }
         monthTotal.setMoney(monthTotal.getMoney().subtract(money));
-        List<BalanceLog> balanceLogs = balanceLogRepository.findByUsernameAndYearGreaterThanEqualAndAndMonthGreaterThanEqual(
+        final List<BalanceLog> balanceLogs = balanceLogRepository.findByUsernameAndYearGreaterThanEqualAndAndMonthGreaterThanEqual(
                 transactionInformation.getUsername(), transactionInformation.getYear(), transactionInformation.getMonth());
         if (!CollectionUtils.isEmpty(balanceLogs)){
             balanceLogs.forEach(balanceLog -> balanceLog.setBalance(balanceLog.getBalance().subtract(money)));
@@ -187,9 +200,9 @@ public class TransactionService {
      * @param accountInformation saved accountInformation
      */
     private void saveBalanceInformation(final TransactionInformation accountInformation){
-        List<BalanceLog> balanceLogs = balanceLogRepository.findByUsernameAndYearGreaterThanEqualAndAndMonthGreaterThanEqual(
+        final List<BalanceLog> balanceLogs = balanceLogRepository.findByUsernameAndYearGreaterThanEqualAndAndMonthGreaterThanEqual(
                 accountInformation.getUsername(), accountInformation.getYear(), accountInformation.getMonth());
-        BigDecimal money = new BigDecimal(accountInformation.getMoney());
+        final BigDecimal money = new BigDecimal(accountInformation.getMoney());
         if (CollectionUtils.isEmpty(balanceLogs)){
             BalanceLog lastBalanceLog = balanceLogRepository.findFirstByUsernameOrderByYearDescMonthDesc(accountInformation.getUsername());
             if (null == lastBalanceLog){
@@ -197,7 +210,7 @@ public class TransactionService {
                 lastBalanceLog.setBalance(money);
                 balanceLogRepository.saveAndFlush(lastBalanceLog);
             }else {
-                BalanceLog balanceLog = createBalanceLog(accountInformation);
+                final BalanceLog balanceLog = createBalanceLog(accountInformation);
                 balanceLog.setBalance(lastBalanceLog.getBalance().add(money));
                 balanceLogRepository.saveAndFlush(balanceLog);
             }
@@ -207,7 +220,7 @@ public class TransactionService {
         }
     }
 
-    private BalanceLog createBalanceLog(TransactionInformation accountInformation) {
+    private BalanceLog createBalanceLog(final TransactionInformation accountInformation) {
         final BalanceLog balanceLog = new BalanceLog();
         balanceLog.setYear(accountInformation.getYear());
         balanceLog.setMonth(accountInformation.getMonth());
