@@ -1,12 +1,9 @@
 package com.damon.repository;
 
 import com.damon.entity.TransactionInformation;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 /**
  *  account information repository
@@ -24,15 +21,20 @@ public interface TransactionInformationRepository extends JpaRepository<Transact
      * @param year      year
      * @param month     month
      * @param username  username
+     * @param currentPage  currentPage
+     * @param pageSize     pageSize
      * @return           accountInformationEntity collection
      */
-    default List<TransactionInformation> findTransactionInformation(Integer year, Integer month, String username){
-        Sort sort = Sort.by(Sort.Direction.DESC, "year", "month", "dayOfMonth");
+    default Page<TransactionInformation> findTransactionInformation(final Integer year, final Integer month,
+                                                                    final String username, final Integer currentPage,
+                                                                    final Integer pageSize){
+        final Sort sort = Sort.by(Sort.Direction.DESC, "year", "month", "dayOfMonth");
+        final Pageable pageable = PageRequest.of(currentPage, pageSize, sort);
         TransactionInformation transactionInformation = new TransactionInformation();
         transactionInformation.setYear(year);
         transactionInformation.setMonth(month);
         transactionInformation.setUsername(username);
-        return findAll(Example.of(transactionInformation),sort);
+        return findAll(Example.of(transactionInformation),pageable);
     }
 
 }

@@ -20,9 +20,23 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
+    /**
+     *  found information
+     *
+     * @param year        year
+     * @param month       month
+     * @param username   userName
+     * @param currentPate  current page
+     * @param pageSize    pateSize
+     * @return            TransactionDto
+     */
     @GetMapping("/find-information")
-    public TransactionDto findCurrentInformation(final Integer year,final Integer month,final String username){
-        return transactionService.findTransactionInformation(year, month, username);
+    public TransactionDto findCurrentInformation(final Integer year,
+                                                  final Integer month,
+                                                  final String username,
+                                                  @RequestParam(defaultValue = "0") final Integer currentPate,
+                                                  @RequestParam(defaultValue = "50") final Integer pageSize){
+        return transactionService.findTransactionInformation(year, month, username, currentPate, pageSize);
     }
 
     /**
@@ -39,10 +53,9 @@ public class TransactionController {
      *  delete transaction
      *
      * @param id     id
-     * @throws Throwable   throwable
      */
     @GetMapping("/delete-transaction")
-    public void deleteTransaction(String id) throws Throwable {
+    public void deleteTransaction(String id) {
         transactionService.deleteTransaction(id);
     }
 

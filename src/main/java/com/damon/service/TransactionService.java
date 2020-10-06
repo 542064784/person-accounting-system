@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -46,13 +47,22 @@ public class TransactionService {
      * @param year       year
      * @param month      month
      * @param username  username
+     * @param currentPate  currentPage
+     * @param pageSize     pageSize
      * @return            transactionDto
      */
-    public TransactionDto findTransactionInformation(final Integer year, final Integer month, String username){
+    public TransactionDto findTransactionInformation(final Integer year, final Integer month, final String username,
+                                                      final Integer currentPate, final Integer pageSize){
         final TransactionDto transactionDto = new TransactionDto(year,month,username);
-        final List<TransactionInformation> transactionInformationList = transactionInformationRepository.
-                findTransactionInformation(year, month, username);
+        final Page<TransactionInformation> page = transactionInformationRepository.
+                findTransactionInformation(year, month, username, currentPate, pageSize);
+        transactionDto.setPageSize(pageSize);
+        transactionDto.setCurrentPate(currentPate);
+        transactionDto.setTotalPages(page.getTotalPages());
+        transactionDto.setTotalElements(page.getTotalElements());
+
         final List<TransactionInformationDto> transactionInformationDtoList = new ArrayList<>();
+        final List<TransactionInformation> transactionInformationList = page.getContent();
         transactionInformationList.forEach(transactionInformation -> {
             if (null != transactionInformation){
                 TransactionInformationDto transactionInformationDto = new TransactionInformationDto();
@@ -63,7 +73,15 @@ public class TransactionService {
         });
         transactionDto.setTransactionInformationDtoList(transactionInformationDtoList);
 
-        final List<MonthTotal> monthTotalList = monthTotalRepository.findByUsernameAndYearAndMonth(username, year, month);
+        final LocalDate localDate = LocalDate.now();
+        final Integer paramYear = transactionInformationList.stream().map(TransactionInformation::getYear)
+                .max(Integer::compareTo).orElse(localDate.getYear());
+        final Integer paramMonth = transactionInformationList.stream().filter(t -> t.getYear().equals(paramYear))
+                .map(TransactionInformation::getMonth).max(Integer::compareTo).orElse(localDate.getMonthValue());
+        transactionDto.setYear(paramYear);
+        transactionDto.setMonth(paramMonth);
+
+        final List<MonthTotal> monthTotalList = monthTotalRepository.findByUsernameAndYearAndMonth(username, paramYear, paramMonth);
 
         final List<MonthTotalDto> monthTotalDtoList = new ArrayList<>();
         monthTotalList.forEach(monthTotal -> {
@@ -81,7 +99,7 @@ public class TransactionService {
 
         transactionDto.setMonthTotalDtoList(monthTotalDtoList);
 
-        final BalanceLog balanceInformation = balanceLogRepository.findByUsernameAndYearAndMonth(username,year,month);
+        final BalanceLog balanceInformation = balanceLogRepository.findByUsernameAndYearAndMonth(username, paramYear, paramMonth);
         if (null == balanceInformation){
             transactionDto.setBalance(BigDecimal.ZERO);
         }else {

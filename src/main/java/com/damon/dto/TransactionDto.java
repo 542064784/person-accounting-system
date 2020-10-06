@@ -20,6 +20,14 @@ public class TransactionDto {
 
     private String username;
 
+    private Integer pageSize;
+
+    private Integer currentPate;
+
+    private Integer totalPages;
+
+    private Long totalElements;
+
     private BigDecimal balance = BigDecimal.ZERO;
 
     private BigDecimal monthConsumption = BigDecimal.ZERO;
