@@ -35,7 +35,7 @@ public class TransactionController {
                                                   final Integer month,
                                                   final String username,
                                                   @RequestParam(defaultValue = "0") final Integer currentPate,
-                                                  @RequestParam(defaultValue = "50") final Integer pageSize){
+                                                  @RequestParam(defaultValue = "70") final Integer pageSize){
         return transactionService.findTransactionInformation(year, month, username, currentPate, pageSize);
     }
 
